@@ -40,4 +40,4 @@ if [ ! -f download/$MINIFORGE3_RELEASE ]; then
         exit 1
     fi
 fi
-docker build --rm -f Dockerfile -t coppeliasim-ubuntu22:latest .
+docker build --rm -f Dockerfile -t voxposer:ubuntu20-v1 .
