@@ -5,7 +5,7 @@ VoxPoser Docker image
 
 Use `docker build` as usual, or use the provided script:
 
-Check `build.sh` for detailed information as you need to download `CoppeliaSim_Edu_V4_1_0_Ubuntu20_04.tar.xz` adn place it in `./download`.
+Check `build.sh` for detailed information as you need to download `CoppeliaSim_Edu_V4_1_0_Ubuntu20_04.tar.xz` and place it in `./download`.
 
 ```bash
 docker build --rm -f Dockerfile -t voxposer:ubuntu20-v1 .
