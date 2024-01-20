@@ -52,7 +52,7 @@ RUN git clone https://github.com/stepjam/RLBench.git --depth 1 && cd RLBench && 
     python -m pip install . && \
     cd .. && rm -rf RLBench
 # install other packages
-RUN python -m pip install gdown jupyter openai plotly transforms3d open3d pyzmq cbor accelerate opencv-python-headless progressbar2 gdown gitpython git+https://github.com/cheind/py-thin-plate-spline hickle tensorboard transformers
+RUN python -m pip install open3d jupyter openai plotly transforms3d open3d pyzmq cbor accelerate opencv-python-headless progressbar2 gdown gitpython git+https://github.com/cheind/py-thin-plate-spline hickle tensorboard transformers
 RUN rm -rf /root/.cache/pip
 
 # clone the huggingface models repo
