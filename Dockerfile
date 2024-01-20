@@ -7,8 +7,7 @@ ARG SAM_VAE_DOWNLOAD_REPO=https://huggingface.co/facebook/sam-vit-huge
 ARG RESNET18_MODEL_LINK=https://download.pytorch.org/models/resnet18-f37072fd.pth
 ARG RESNET50_MODEL_LINK=https://download.pytorch.org/models/resnet50-0676ba61.pth
 
-RUN sed -i 's/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list &&\
-    apt-get update && \
+RUN apt-get update && \
 	export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -38,8 +37,7 @@ ENV PATH=$COPPELIASIM_ROOT:$PATH
 
 # set up python environment
 # set pip mirror to Tsinghua University and upgrade pip
-RUN python -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
-    python -m pip install --upgrade pip
+RUN python -m pip install --upgrade pip
 
 # install python packages
 # install torch environment
