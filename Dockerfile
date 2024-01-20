@@ -20,10 +20,10 @@ RUN sed -i 's/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/source
 # set pip mirror to Tsinghua University and upgrade pip
 RUN python -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
     python -m pip install --upgrade pip
-# install other packages
-RUN python -m pip install gdown jupyter openai plotly transforms3d open3d pyzmq cbor accelerate opencv-python-headless progressbar2 gdown gitpython git+https://github.com/cheind/py-thin-plate-spline hickle tensorboard transformers
 # install torch environment
 RUN python -m pip install torch torchvision torchaudio
+# install other packages
+RUN python -m pip install gdown jupyter openai plotly transforms3d open3d pyzmq cbor accelerate opencv-python-headless progressbar2 gdown gitpython git+https://github.com/cheind/py-thin-plate-spline hickle tensorboard transformers
 # install PyRep and RLBench
 RUN git clone https://github.com/stepjam/PyRep.git --depth 1 && cd PyRep && \
     python -m pip install -r requirements.txt && \
