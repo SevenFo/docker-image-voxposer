@@ -41,7 +41,9 @@ RUN python -m pip install --upgrade pip
 
 # install python packages
 # install torch environment
-RUN python -m pip install torch torchvision torchaudio
+RUN python -m pip install torch torchvision torchaudio open3d
+# install other packages
+RUN python -m pip install jupyter openai plotly transforms3d pyzmq cbor accelerate opencv-python-headless progressbar2 gdown gitpython git+https://github.com/cheind/py-thin-plate-spline hickle tensorboard transformers
 # install PyRep and RLBench
 RUN git clone https://github.com/stepjam/PyRep.git --depth 1 && cd PyRep && \
     python -m pip install -r requirements.txt && \
@@ -51,8 +53,6 @@ RUN git clone https://github.com/stepjam/RLBench.git --depth 1 && cd RLBench && 
     python -m pip install -r requirements.txt && \
     python -m pip install . && \
     cd .. && rm -rf RLBench
-# install other packages
-RUN python -m pip install open3d jupyter openai plotly transforms3d open3d pyzmq cbor accelerate opencv-python-headless progressbar2 gdown gitpython git+https://github.com/cheind/py-thin-plate-spline hickle tensorboard transformers
 RUN rm -rf /root/.cache/pip
 
 # clone the huggingface models repo
