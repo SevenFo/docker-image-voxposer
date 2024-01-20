@@ -1,13 +1,7 @@
 FROM ubuntu:20.04
 
-ARG COPPELIASIM_DOWNLOAD_LINK=https://downloads.coppeliarobotics.com/V4_1_0/CoppeliaSim_Edu_V4_1_0_Ubuntu20_04.tar.xz
-ARG XMEM_MODEL_LINK=https://github.com/hkchengrex/XMem/releases/download/v1.0/XMem.pth
-ARG OWLV2_DOWNLOAD_REPO=https://huggingface.co/google/owlv2-large-patch14-ensemble
-ARG SAM_VAE_DOWNLOAD_REPO=https://huggingface.co/facebook/sam-vit-huge
-ARG RESNET18_MODEL_LINK=https://download.pytorch.org/models/resnet18-f37072fd.pth
-ARG RESNET50_MODEL_LINK=https://download.pytorch.org/models/resnet50-0676ba61.pth
-
-RUN apt-get update && \
+RUN sed -i 's/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list &&\
+    apt-get update && \
 	export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -22,24 +16,12 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* && \
     ln -s /bin/python3.9 /bin/python
 
-RUN mkdir -p /shared /opt /root/workspace /models
-
-# download CoppeliaSim and extract it to /opt
-
-RUN wget -O /opt/CoppeliaSim_Edu_V4_1_0_Ubuntu20_04.tar.xz $COPPELIASIM_DOWNLOAD_LINK
-RUN tar -xf /opt/CoppeliaSim_Edu_V4_1_0_Ubuntu20_04.tar.xz -C /opt && \
-    rm /opt/CoppeliaSim_Edu_V4_1_0_Ubuntu20_04.tar.xz
-
-ENV COPPELIASIM_ROOT=/opt/CoppeliaSim_Edu_V4_1_0_Ubuntu20_04
-ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$COPPELIASIM_ROOT
-ENV QT_QPA_PLATFORM_PLUGIN_PATH=$COPPELIASIM_ROOT
-ENV PATH=$COPPELIASIM_ROOT:$PATH
-
 # set up python environment
 # set pip mirror to Tsinghua University and upgrade pip
-RUN python -m pip install --upgrade pip
-
-# install python packages
+RUN python -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
+    python -m pip install --upgrade pip
+# install other packages
+RUN python -m pip install gdown jupyter openai plotly transforms3d open3d pyzmq cbor accelerate opencv-python-headless progressbar2 gdown gitpython git+https://github.com/cheind/py-thin-plate-spline hickle tensorboard transformers
 # install torch environment
 RUN python -m pip install torch torchvision torchaudio
 # install PyRep and RLBench
@@ -51,18 +33,25 @@ RUN git clone https://github.com/stepjam/RLBench.git --depth 1 && cd RLBench && 
     python -m pip install -r requirements.txt && \
     python -m pip install . && \
     cd .. && rm -rf RLBench
-# install other packages
-RUN python -m pip install gdown jupyter openai plotly transforms3d open3d pyzmq cbor accelerate opencv-python-headless progressbar2 gdown gitpython git+https://github.com/cheind/py-thin-plate-spline hickle tensorboard transformers
 RUN rm -rf /root/.cache/pip
 
-# clone the huggingface models repo
-RUN git lfs install && \
-    git clone --depth 1 OWLV2_DOWNLOAD_REPO /models/owlv2 && \
-    git clone --depth 1 SAN_VAE_DOWNLOAD_REPO /models/sam
-# download xmem model, resnet18 and resnet50
-RUN wget -O /models/xmem.pth $XMEM_MODEL_LINK && \
-    wget -O /models/resnet18.pth $RESNET18_MODEL_LINK && \
-    wget -O /models/resnet50.pth $RESNET50_MODEL_LINK
+RUN mkdir -p /shared /opt /root/workspace /models
+
+# download CoppeliaSim and extract it to /opt
+
+COPY download/CoppeliaSim_Edu_V4_1_0_Ubuntu20_04.tar.xz /opt
+RUN tar -xf /opt/CoppeliaSim_Edu_V4_1_0_Ubuntu20_04.tar.xz -C /opt && \
+    rm /opt/CoppeliaSim_Edu_V4_1_0_Ubuntu20_04.tar.xz
+
+ENV COPPELIASIM_ROOT=/opt/CoppeliaSim_Edu_V4_1_0_Ubuntu20_04
+ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$COPPELIASIM_ROOT
+ENV QT_QPA_PLATFORM_PLUGIN_PATH=$COPPELIASIM_ROOT
+ENV PATH=$COPPELIASIM_ROOT:$PATH
+
+# copy the huggingface models repo
+COPY download/models.tar.gz /models
+RUN tar -xvf /models/models.tar.gz -C /models && \
+    rm /models/models.tar.gz
 
 WORKDIR /root/workspace
 
