@@ -5,7 +5,7 @@ RUN sed -i 's/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/source
 	export DEBIAN_FRONTEND=noninteractive && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
-        wget vim gcc bash tar xz-utils git \
+        wget vim gcc bash unzip tar xz-utils git \
         libx11-6 libxcb1 libxau6 libgl1-mesa-dev \
         xvfb dbus-x11 x11-utils libxkbcommon-x11-0 \
         libavcodec-dev libavformat-dev libswscale-dev \
@@ -19,39 +19,34 @@ RUN sed -i 's/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/source
 # set up python environment
 # set pip mirror to Tsinghua University and upgrade pip
 RUN python -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
-    python -m pip install --upgrade pip
-# install torch environment
-RUN python -m pip install torch torchvision torchaudio
-# install other packages
-RUN python -m pip install gdown jupyter openai plotly transforms3d open3d pyzmq cbor accelerate opencv-python-headless progressbar2 gdown gitpython git+https://github.com/cheind/py-thin-plate-spline hickle tensorboard transformers
-# install PyRep and RLBench
-RUN git clone https://github.com/stepjam/PyRep.git --depth 1 && cd PyRep && \
-    python -m pip install -r requirements.txt && \
-    python -m pip install . && \
-    cd .. && rm -rf PyRep
-RUN git clone https://github.com/stepjam/RLBench.git --depth 1 && cd RLBench && \
-    python -m pip install -r requirements.txt && \
-    python -m pip install . && \
-    cd .. && rm -rf RLBench
-RUN rm -rf /root/.cache/pip
-
-RUN mkdir -p /shared /opt /root/workspace /models
+    python -m pip --no-cache-dir install --upgrade pip && \
+    python -m pip --no-cache-dir install torch torchvision torchaudio gdown jupyter openai plotly transforms3d open3d pyzmq cbor accelerate opencv-python-headless progressbar2 gdown gitpython git+https://github.com/cheind/py-thin-plate-spline hickle tensorboard transformers
 
 # download CoppeliaSim and extract it to /opt
 
-COPY download/CoppeliaSim_Edu_V4_1_0_Ubuntu20_04.tar.xz /opt
-RUN tar -xf /opt/CoppeliaSim_Edu_V4_1_0_Ubuntu20_04.tar.xz -C /opt && \
-    rm /opt/CoppeliaSim_Edu_V4_1_0_Ubuntu20_04.tar.xz
+ADD download/CoppeliaSim_Edu_V4_1_0_Ubuntu20_04.tar.xz /opt
 
 ENV COPPELIASIM_ROOT=/opt/CoppeliaSim_Edu_V4_1_0_Ubuntu20_04
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$COPPELIASIM_ROOT
 ENV QT_QPA_PLATFORM_PLUGIN_PATH=$COPPELIASIM_ROOT
 ENV PATH=$COPPELIASIM_ROOT:$PATH
 
+# install PyRep and RLBench
+RUN git clone https://github.com/stepjam/PyRep.git --depth 1 && \
+    cd PyRep && \
+    python -m pip --no-cache-dir install -r requirements.txt && \
+    python -m pip --no-cache-dir install . && \
+    cd .. && rm -rf PyRep  && \
+    git clone https://github.com/stepjam/RLBench.git --depth 1 && \
+    cd RLBench && \
+    python -m pip --no-cache-dir install -r requirements.txt && \
+    python -m pip --no-cache-dir install . && \
+    cd .. && rm -rf RLBench
+
+RUN mkdir -p /shared /opt /root/workspace /models
+
 # copy the huggingface models repo
-COPY download/models.tar.gz /models
-RUN tar -xvf /models/models.tar.gz -C /models && \
-    rm /models/models.tar.gz
+ADD download/models.tar.gz /models
 
 WORKDIR /root/workspace
 
