@@ -20,7 +20,7 @@ RUN sed -i 's/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/source
 # set pip mirror to Tsinghua University and upgrade pip
 RUN python -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
     python -m pip --no-cache-dir install --upgrade pip && \
-    python -m pip --no-cache-dir install torch torchvision torchaudio gdown jupyter openai plotly transforms3d open3d pyzmq cbor accelerate opencv-python-headless progressbar2 gdown gitpython git+https://github.com/cheind/py-thin-plate-spline hickle tensorboard transformers
+    python -m pip --no-cache-dir install torch==1.12.1+cu113 torchvision==0.13.1+cu113 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu113 jupyter openai plotly transforms3d open3d pyzmq cbor accelerate opencv-python-headless progressbar2 gdown gitpython git+https://github.com/cheind/py-thin-plate-spline hickle tensorboard transformers
 
 # download CoppeliaSim and extract it to /opt
 
