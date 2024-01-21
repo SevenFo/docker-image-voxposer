@@ -16,20 +16,22 @@ RUN sed -i 's/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/source
     rm -rf /var/lib/apt/lists/* && \
     ln -s /bin/python3.9 /bin/python
 
-# set up python environment
-# set pip mirror to Tsinghua University and upgrade pip
-RUN python -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
-    python -m pip --no-cache-dir install --upgrade pip && \
-    python -m pip --no-cache-dir install torch==1.12.1+cu113 torchvision==0.13.1+cu113 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu113 jupyter openai plotly transforms3d open3d pyzmq cbor accelerate opencv-python-headless progressbar2 gdown gitpython git+https://github.com/cheind/py-thin-plate-spline hickle tensorboard transformers
-
+RUN mkdir -p /shared /opt /root/workspace /models
 # download CoppeliaSim and extract it to /opt
-
 ADD download/CoppeliaSim_Edu_V4_1_0_Ubuntu20_04.tar.xz /opt
+# copy the huggingface models repo
+ADD download/models.tar.gz /models
 
 ENV COPPELIASIM_ROOT=/opt/CoppeliaSim_Edu_V4_1_0_Ubuntu20_04
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$COPPELIASIM_ROOT
 ENV QT_QPA_PLATFORM_PLUGIN_PATH=$COPPELIASIM_ROOT
 ENV PATH=$COPPELIASIM_ROOT:$PATH
+
+# set up python environment
+# set pip mirror to Tsinghua University and upgrade pip
+RUN python -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
+    python -m pip --no-cache-dir install --upgrade pip && \
+    python -m pip --no-cache-dir install torch==1.12.1+cu113 torchvision==0.13.1+cu113 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu113 jupyter openai plotly transforms3d open3d pyzmq cbor accelerate opencv-python-headless progressbar2 gdown gitpython git+https://github.com/cheind/py-thin-plate-spline hickle tensorboard transformers
 
 # install PyRep and RLBench
 RUN git clone https://github.com/stepjam/PyRep.git --depth 1 && \
@@ -42,11 +44,6 @@ RUN git clone https://github.com/stepjam/PyRep.git --depth 1 && \
     python -m pip --no-cache-dir install -r requirements.txt && \
     python -m pip --no-cache-dir install . && \
     cd .. && rm -rf RLBench
-
-RUN mkdir -p /shared /opt /root/workspace /models
-
-# copy the huggingface models repo
-ADD download/models.tar.gz /models
 
 WORKDIR /root/workspace
 
