@@ -25,8 +25,15 @@ RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.d
 
 RUN mkdir -p /shared /opt /root/workspace /models /models/owlv2 /models/sam
 
-# download CoppeliaSim and extract it to /opt
+# clone the huggingface models repo
+RUN git clone --depth 1 $OWLV2_DOWNLOAD_REPO /models/owlv2 && \
+    git clone --depth 1 $SAN_VAE_DOWNLOAD_REPO /models/sam
+# download xmem model, resnet18 and resnet50
+RUN wget -O /models/xmem.pth $XMEM_MODEL_LINK && \
+    wget -O /models/resnet18.pth $RESNET18_MODEL_LINK && \
+    wget -O /models/resnet50.pth $RESNET50_MODEL_LINK
 
+# download CoppeliaSim and extract it to /opt
 RUN wget -O /opt/CoppeliaSim_Edu_V4_1_0_Ubuntu20_04.tar.xz $COPPELIASIM_DOWNLOAD_LINK && \
 	tar -xf /opt/CoppeliaSim_Edu_V4_1_0_Ubuntu20_04.tar.xz -C /opt && \
     	rm /opt/CoppeliaSim_Edu_V4_1_0_Ubuntu20_04.tar.xz
@@ -36,13 +43,6 @@ ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$COPPELIASIM_ROOT
 ENV QT_QPA_PLATFORM_PLUGIN_PATH=$COPPELIASIM_ROOT
 ENV PATH=$COPPELIASIM_ROOT:$PATH
 
-# clone the huggingface models repo
-RUN git clone --depth 1 OWLV2_DOWNLOAD_REPO /models/owlv2 && \
-    git clone --depth 1 SAN_VAE_DOWNLOAD_REPO /models/sam
-# download xmem model, resnet18 and resnet50
-RUN wget -O /models/xmem.pth $XMEM_MODEL_LINK && \
-    wget -O /models/resnet18.pth $RESNET18_MODEL_LINK && \
-    wget -O /models/resnet50.pth $RESNET50_MODEL_LINK
 
 # set up python environment
 # set pip mirror to Tsinghua University and upgrade pip
