@@ -3,7 +3,7 @@ FROM ubuntu:20.04
 ARG COPPELIASIM_DOWNLOAD_LINK=https://downloads.coppeliarobotics.com/V4_1_0/CoppeliaSim_Edu_V4_1_0_Ubuntu20_04.tar.xz
 ARG XMEM_MODEL_LINK=https://github.com/hkchengrex/XMem/releases/download/v1.0/XMem.pth
 ARG OWLV2_DOWNLOAD_REPO=https://huggingface.co/google/owlv2-large-patch14-ensemble
-ARG SAM_VAE_DOWNLOAD_REPO=https://huggingface.co/facebook/sam-vit-huge
+ARG SAM_DOWNLOAD_REPO=https://huggingface.co/facebook/sam-vit-huge
 ARG RESNET18_MODEL_LINK=https://download.pytorch.org/models/resnet18-f37072fd.pth
 ARG RESNET50_MODEL_LINK=https://download.pytorch.org/models/resnet50-0676ba61.pth
 
@@ -27,7 +27,7 @@ RUN mkdir -p /shared /opt /root/workspace /models /models/owlv2 /models/sam
 
 # clone the huggingface models repo
 RUN git clone --depth 1 $OWLV2_DOWNLOAD_REPO /models/owlv2 && \
-    git clone --depth 1 $SAN_VAE_DOWNLOAD_REPO /models/sam
+    git clone --depth 1 $SAM_DOWNLOAD_REPO /models/sam
 # download xmem model, resnet18 and resnet50
 RUN wget -O /models/xmem.pth $XMEM_MODEL_LINK && \
     wget -O /models/resnet18.pth $RESNET18_MODEL_LINK && \
