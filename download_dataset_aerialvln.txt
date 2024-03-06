@@ -1,0 +1,4 @@
+https://aerialvln.s3.ap-southeast-2.amazonaws.com/dataset/aerialvln/test.json
+https://aerialvln.s3.ap-southeast-2.amazonaws.com/dataset/aerialvln/train.json
+https://aerialvln.s3.ap-southeast-2.amazonaws.com/dataset/aerialvln/val_unseen.json
+https://aerialvln.s3.ap-southeast-2.amazonaws.com/dataset/aerialvln/val_seen.json
