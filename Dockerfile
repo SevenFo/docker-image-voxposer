@@ -15,7 +15,9 @@ RUN sed -i 's/archive.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/source
         && \
     apt-get autoclean -y && apt-get autoremove -y && apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    ln -s /bin/python3.9 /bin/python
+    update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 1 && \
+    update-alternatives --install /usr/bin/python python /usr/bin/python3.9 1 && \
+    update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 2
 
 RUN mkdir -p /shared /opt /root/workspace /models
 # download CoppeliaSim and extract it to /opt
@@ -25,7 +27,6 @@ ADD download/models.tar.gz /models
 
 # set up python environment
 # set pip mirror to Tsinghua University and upgrade pip
-RUN rm /bin/python3 && ln -s /bin/python3.9 /bin/python3
 RUN python -m pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
 ENV COPPELIASIM_ROOT=/opt/CoppeliaSim_Edu_V4_1_0_Ubuntu20_04
@@ -91,6 +92,10 @@ RUN --mount=type=cache,target=/root/.cache \
     python -m pip install --upgrade pip && \
     python -m pip install --ignore-installed torch==1.12.1+cu113 torchvision==0.13.1+cu113 torchaudio==0.12.1 --extra-index-url https://download.pytorch.org/whl/cu113 jupyter openai plotly transforms3d open3d pyzmq cbor accelerate opencv-python-headless progressbar2 gdown gitpython git+https://github.com/cheind/py-thin-plate-spline hickle tensorboard transformers
 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ros-noetic-image-transport ros-noetic-tf \
+    && rm -rf /var/lib/apt/lists/*
+
 # install PyRep and RLBench
 RUN --mount=type=cache,target=/root/.cache \
     git clone https://github.com/stepjam/PyRep.git --depth 1 && \
@@ -103,9 +108,6 @@ RUN --mount=type=cache,target=/root/.cache \
     python -m pip install -r requirements.txt && \
     python -m pip install . && \
     cd .. && rm -rf RLBench
-
-RUN --mount=type=cache,target=/root/.cache \
-    python -m pip uninstall -y netifaces && python -m pip install netifaces
 
 WORKDIR /root/workspace
 
